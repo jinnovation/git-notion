@@ -6,7 +6,7 @@ from configparser import ConfigParser
 import re
 
 from notion.block import PageBlock
-from notion.block import TextBlock
+from notion.block import CalloutBlock, TextBlock
 from notion.client import NotionClient
 from md2notion.upload import upload
 
@@ -46,6 +46,11 @@ def upload_file(base_page, filename: str, page_title=None):
     for child in page.children:
         child.remove()
     page.children.add_new(TextBlock, title=f"MD5: {hasher.hexdigest()}")
+    page.children.add_new(
+        CalloutBlock,
+        title="**Warning**: This page is version-controlled in Git. Do not unlock and edit; your changes will be overwritten.",
+    )
+    page.locked = True
 
     with open(filename, "r", encoding="utf-8") as mdFile:
         upload(mdFile, page)
